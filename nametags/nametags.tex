@@ -1,0 +1,47 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{fullpage}
+\usepackage{filecontents}
+\usepackage{csvtools}
+\usepackage{eso-pic}
+\usepackage{graphicx}
+\usepackage{fix-cm}
+
+\pagestyle{empty}
+
+\setlength{\oddsidemargin}{-15mm}
+
+\AddToShipoutPicture{%
+   \setlength\unitlength{1mm}
+    \put(14,212.5){\includegraphics[height=55mm,keepaspectratio=true]{GRB2012-logo_small.jpg}}
+   \put(107,212.5){\includegraphics[height=55mm,keepaspectratio=true]{GRB2012-logo_small.jpg}}
+    \put(14,155){\includegraphics[height=55mm,keepaspectratio=true]{GRB2012-logo_small.jpg}}
+   \put(107,155){\includegraphics[height=55mm,keepaspectratio=true]{GRB2012-logo_small.jpg}}
+    \put(14,97){\includegraphics[height=55mm,keepaspectratio=true]{GRB2012-logo_small.jpg}}
+   \put(107,97){\includegraphics[height=55mm,keepaspectratio=true]{GRB2012-logo_small.jpg}}
+     \put(14,39.5){\includegraphics[height=55mm,keepaspectratio=true]{GRB2012-logo_small.jpg}}
+    \put(107,39.5){\includegraphics[height=55mm,keepaspectratio=true]{GRB2012-logo_small.jpg}}
+}
+
+%\begin{filecontents*}{names.csv}
+%Name,Affiliation
+%Neil Carter, Swansea University
+%Vlad Sudilovsky, MPE
+%\end{filecontents*}
+
+\begin{document}
+
+\applyCSVfile{names.csv}{%
+    \noindent
+        \fbox{\begin{minipage}[t][55mm]{90mm}
+            \vspace{15mm}
+
+            \sffamily \centering
+                \fontsize{30}{36}\selectfont\insertName
+                \LARGE \vspace{10mm}
+
+                \itshape\insertAffiliation
+
+            \end{minipage}}
+}
+
+\end{document}

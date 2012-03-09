@@ -1,0 +1,64 @@
+Found from:
+http://psy.swan.ac.uk/staff/carter/unix/latex_badges.htm
+
+A LaTeX Template for Name Badges
+
+I needed to create name badges when I organised the 2010 annual conference of the Association of Technical Staff in Psychology. Thanks to the advice offered by the comp.text.tex experts in the thread using latex to produce conference ID badges, I was able to come up with the following latex template.
+
+Just paste in your list of names between the \begin{filecontents*} and \end{filecontents*} tags, and change logo to the name of your graphics file (presumably, you'll want some sort of watermark image as a background).
+
+Once you've added the delegates' names and the image file name, all you need do is compile. As is stands, this template generates name cards on A4 paper with the standard badge size of 5.5cm by 9.2cm.
+
+
+\documentclass[a4paper,12pt]{article}
+\usepackage{fullpage}
+\usepackage{filecontents}
+\usepackage{csvtools}
+\usepackage{eso-pic}
+\usepackage{graphicx}
+\usepackage{fix-cm}
+
+\pagestyle{empty}
+
+\setlength{\oddsidemargin}{-15mm}
+
+\AddToShipoutPicture{%
+   \setlength\unitlength{1mm}
+    \put(14,212.5){\includegraphics[height=55mm,keepaspectratio=true]{logo}}
+   \put(107,212.5){\includegraphics[height=55mm,keepaspectratio=true]{logo}}
+    \put(14,155){\includegraphics[height=55mm,keepaspectratio=true]{logo}}
+   \put(107,155){\includegraphics[height=55mm,keepaspectratio=true]{logo}}
+    \put(14,97){\includegraphics[height=55mm,keepaspectratio=true]{logo}}
+   \put(107,97){\includegraphics[height=55mm,keepaspectratio=true]{logo}}
+     \put(14,39.5){\includegraphics[height=55mm,keepaspectratio=true]{logo}}
+    \put(107,39.5){\includegraphics[height=55mm,keepaspectratio=true]{logo}}
+}
+
+\begin{filecontents*}{names.csv}
+Name,Affiliation
+Neil Carter, Swansea University
+\end{filecontents*}
+
+\begin{document}
+
+\applyCSVfile{names.csv}{%
+    \noindent
+        \fbox{\begin{minipage}[t][55mm]{90mm}
+            \vspace{15mm}
+
+            \sffamily \centering
+                \fontsize{30}{36}\selectfont\insertName
+                \LARGE \vspace{10mm}
+
+                \itshape\insertAffiliation
+
+            \end{minipage}}
+}
+
+\end{document}
+
+Home 	About Me 	
+Copyright © Neil Carter
+
+Content last updated: 2011-07-14
+
