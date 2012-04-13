@@ -2,162 +2,138 @@
 #vss april/2012
 
 '''
-Convert abstract sql from the query SELECT title, authors, affiliations, abstract FROM presentation  
-(with pipe `|` as delimiter) to abstract###.tex
+Parse the output from the sql query:
+
+SELECT sp.sessionid, sp.sequencenumber, p.type, p.title, p.authors, p.affiliations, p.abstract
+FROM session_presentation sp, presentation p, user u
+WHERE p.id=sp.presentationid and u.invitationstatus='invited' and u.id=p.presenterid
+
+and input the data to make an abstract book.
 '''
 
-__template_abstract = '''
-%%\\anumber{%%s}
+_keys = ['sp.sessionid', 'sp.sequencenumber', 'p.type', 'p.title', 'p.authors', 'p.affiliations', 'p.abstract']
 
-\\atitle{%s}
-
-\\bigskip
-
-\\bigskip
-
-\\bigskip
-
-\\authors{%s}
-
-\\affiliation{%s}
-
-\\bigskip
-
-\\bigskip
-
-\\bigskip
-
-\\bigskip
-\\noindent %s
-'''
-# % (title,authors,affiliations,abstract)
+import sys
 
 
+class presentations(object):
+  def __init__(self):
+    self.presentations = []
+    _sessions = {}
+    _sessions[1] = [1,"$ABSTRACT_SESSION_I_1","Session I: Recent results from Swift and Fermi"]
+    _sessions[2] = [2,"$ABSTRACT_SESSION_IIa_2a","Session IIa: Prompt Emission Spectroscopy"]
+    _sessions[3] = [6,"$ABSTRACT_SESSION_IIIa_3a","Session IIIa: Afterglow Theory"]
+    _sessions[4] = [11,"$ABSTRACT_SESSION_Va_5a","Session Va: Progenitors of Long Duration Bursts"]
+    _sessions[5] = [12,"$ABSTRACT_SESSION_Vb_5b","Session Vb: Progenitors of Short Duration Bursts"]
+    _sessions[6] = [16,"$ABSTRACT_SESSION_VIII_8","Session VIII: Host Galaxies"]
+    _sessions[7] = [9,"$ABSTRACT_SESSION_IVa_4a","Session IVa: GRBs as Probes of the Early Universe"]
+    _sessions[8] = [14,"$ABSTRACT_SESSION_VI_6","Session VI: History and Future Instrumentation"]
+    _sessions[9] = [15,"$ABSTRACT_SESSION_VII_7","Session VII: Grav. Waves, Neutrinos, Cosmic Rays a..."]
+    _sessions[22] = [3,"$ABSTRACT_SESSION_IIb_2b","Session IIb: Prompt Emission Spectroscopy"]
+    _sessions[23] = [4,"$ABSTRACT_SESSION_IIc_2c","Session IIc: Prompt Emission Correlations and Temp..."]
+    _sessions[24] = [7,"$ABSTRACT_SESSION_IIIb_3b","Session IIIb: Afterglow Observations"]
+    _sessions[25] = [13,"$ABSTRACT_SESSION_Vc_5c","Session Vc: Central Engine Physics"]
+    _sessions[27] = [5,"$ABSTRACT_SESSION_IId_2d","Session IId: Very High-Energy Emission"]
+    _sessions[31] = [8,"$ABSTRACT_SESSION_IIIc_3c","Session IIIc: Afterglow Observations"]
+    _sessions[33] = [10,"$ABSTRACT_SESSION_IVb_4b","Session IVb: GRBs as Probes of the Early Universe"]
+    _sessions[34] = [17,"$POSTERS_SESSION_PII_p2","II"]
+    _sessions[35] = [18,"$POSTERS_SESSION_PIII_p3","III"]
+    _sessions[36] = [19,"$POSTERS_SESSION_PIV_p4","IV"]
+    _sessions[37] = [20,"$POSTERS_SESSION_PV_p5","V"]
+    _sessions[38] = [21,"$POSTERS_SESSION_PVI_p6","VI"]
+    _sessions[39] = [22,"$POSTERS_SESSION_PVII_p7","VII"]
+    _sessions[40] = [23,"$POSTERS_SESSION_PVIII_p8","VIII"]
+    self.sessions = _sessions
+  
+  def appendPresentation(self,raw_presentation):
+    if not raw_presentation:
+      return
+    if int(raw_presentation['sp.sessionid']) not in self.sessions:
+      print "UNDEFINED SESSION!"
+      print raw_presentation
+      print "PRESS ENTER TO SKIP"
+      raw_input()
+      return
+    self.presentations.append(raw_presentation)
+  
+  def _order(self):
+    '''Order self.presentations based on session, sequence'''
+    self.presentations = sorted(self.presentations, key=lambda k: (self.sessions[int(k['sp.sessionid'])][0],k['sp.sequencenumber']))
+      
 
+  def makeMaintex(self,filename="main.tex",template_abs='templates/abstract.tex',template_main='templates/main.tex'):
+    self._order()
 
+    #First: write abstracts###.tex
+    fp = open(template_abs,'r')
+    lines = fp.read()
+    fp.close()
+    
+    _mapping = dict((i, []) for i in [self.sessions[k][1] for k in self.sessions])
+    
+    for p in self.presentations:
+      header = self.sessions[int(p['sp.sessionid'])][1]
+      tex = '%% %s\n%s' % (header,lines)
 
-__template_main = '''
-%%file main.tex
-%%Adapted from
-%%http://yetanotherbiochemblog.wordpress.com/2011/10/11/managing-conference-materials-in-latex-part-1-abstract-template/
-\\documentclass[11pt,a5paper]{book}
-\\usepackage[a5paper]{geometry}
-\\usepackage[utf8x]{inputenc}
-\\usepackage[T1]{fontenc}
-\\usepackage[english]{babel}
-\\usepackage{fixltx2e}
+      if p['p.type'] == "poster":
+        tex = tex.replace('$NUMBER','P-%s-%s' % (self.sessions[int(p['sp.sessionid'])][2],p['sp.sequencenumber']))
+      else:
+        tex = tex.replace('$NUMBER','')
+      
+      tex = tex.replace('$TITLE',p['p.title'])
+      tex = tex.replace('$AUTHORS',p['p.authors'])
+      tex = tex.replace('$AFFILIATIONS',p['p.affiliations'])
+      tex = tex.replace('$TEXT',p['p.abstract'])
+      
+      fp = open('abstract%s.tex' % self.presentations.index(p),'w')
+      _mapping[header].append('\include{abstract%s}' % self.presentations.index(p))
+      fp.write(tex)
+      fp.close()
+    
+    #Second: write main.tex
+    fp = open(template_main,'r')
+    lines = fp.read()
+    fp.close()
+    
+    for key in _mapping:
+      lines=lines.replace(key,'\n'.join(_mapping[key]))
+    
+    fp = open('main.tex','w')
+    fp.write(lines)
+    fp.close()
+    
+    print "[%s] written. Please run pdflatex on this file manually." % filename
 
-\\usepackage{hyphenat}
-\\usepackage[usenames,dvipsnames]{color}
-
-%%a5 paper= 	148mm x 210mm
-%%a4 paper=	210mm x 297mm
-\\setlength\\hoffset{-0.79cm} %% 1
-\\setlength\\oddsidemargin{0cm} %% 3
-\\setlength\\evensidemargin{0cm} %% 3
-\\setlength\\textwidth{110mm} %% 8
-\\setlength\\voffset{-2.54cm} %% 2
-\\setlength\\topmargin{1.1cm} %% 4
-\\setlength\\headheight{0.7cm} %% 5
-\\setlength\\headsep{0.4cm} %% 6
-\\setlength\\textheight{170mm} %% 7
-%%\\setlength\\footskip{1.0cm} %% 11
-\\parindent=0cm
-\\parskip=0.1cm
-
-\\renewcommand{\\rmdefault}{ptm}
-
-\\newcommand{\\anumber}[1]{\\leavevmode{\\textbf{#1}}}
-\\newcommand{\\atitle}[1]{\\leavevmode{\\textbf{#1}}}
-\\newcommand{\\affiliation}[1]{\\leavevmode{\\textit{#1}}}
-\\newcommand{\\email}[1]{\\leavevmode{\\url{#1}}}
-\\newcommand{\\presenting}[1]{\\leavevmode{\\textbf{\\underline{#1}}}}
-\\newcommand{\\authors}[1]{\\textbf{#1}}
-
-\\usepackage{graphicx}
-\\usepackage{wrapfig}
-\\newcommand{\\photo}[1]{
-    \\begin{wrapfigure}[4]{o}{0.2\\textwidth}
-    \\includegraphics[width=0.2\\textwidth]{#1}
-    \\end{wrapfigure}
-}
-
-\\usepackage{fancyhdr}
-\\renewcommand{\\headrulewidth}{0.2pt}
-\\renewcommand{\\footrulewidth}{0.2pt}
-
-\\newcommand{\\redefineheaders}[1]{
-    \\pagestyle{fancy}
-    \\fancyhf{}
-    \\fancyhead[LO,RE]{\\textit{#1}}
-    \\fancyhead[CO,CE]{}
-    \\fancyhead[RO,LE]{}
-    \\fancyfoot[RO,LE]{\\thepage}
-    \\fancyfoot[CO,CE]{}
-    \\fancyfoot[LO,RE]{\\textit{GRB 2012 - May 7-11, Munich, Germany}}
-}
-
-\\usepackage{enumerate}
-
-\\usepackage{makeidx}
-\\makeindex
-
-\\begin{document}
-\\title{Abstract book}
-\\maketitle
-\\redefineheaders{Monday, May 7}
-
-%s
-
-\\end{document}
-'''
-# % \include{abstracts###.tex}
-
-
-
-
-
+def parse(line):
+  line = line.replace('~!\n','') #Remove newline delimiter
+  line = line.strip()
+  if not line:
+    return None
+  line = line.split('|') #Field delimiter
+  try:
+    _d = dict((k, line[i]) for (i, k) in enumerate(_keys))
+  except:
+    print "WARNING: Failed parse. Here is the offending line:\n"
+    print line
+    print "\nPRESS ENTER TO CONTINUE"
+    raw_input()
+    return None
+  return _d
 
 
 def main():
+  myPresentations = presentations()
+
   fp = open('presentations.csv','r')
   read = fp.read()
   fp.close()
-  lines = read.split('~!') #Newline delimiter
-  number = -1
+  lines = read.split('~!\n') #Newline delimiter
   for line in lines:
-    number+=1
-    if not line:
-      continue
-    line = line.split('|') #Field delimiter
-    print line
-    try:
-      title = line[0]
-      authors = line[1]
-      affiliations = line[2]
-      abstract = line[3]
-      #print 'title: %s' % title
-      #print 'authors: %s' % authors
-      #print 'affiliations: %s' % affiliations
-      #print 'abstract: %s' % abstract
-      print '%s' % (title)
-      print "  ===> Adding to abstract%s.tex\n\n" % number
-      fp = open('abstract%s.tex' % number,'w')
-      #print __template_abstract % (number,title,authors,affiliations,abstract)
-      fp.write(__template_abstract % (title,authors,affiliations,abstract))
-      fp.close()
-    except:
-      print "WARNING: Failed parse"
-      print line
-      print "PRESS ENTER TO CONTINUE"
-      raw_input()
-      continue
+    myPresentations.appendPresentation(parse(line))
+  myPresentations.makeMaintex()
       
-  fp = open('main.tex','w')
-  includes = '\n'.join(['\include{abstract%s}' % i for i in range(number)])
-  fp.write(__template_main % (includes)) 
-  fp.close()
-  print "[main.tex] written. Please run pdflatex on this file manually."
+      
+      
 
 
 if __name__ == "__main__":
