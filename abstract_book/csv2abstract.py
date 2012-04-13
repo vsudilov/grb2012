@@ -40,7 +40,8 @@ __template_main = '''
 %%file main.tex
 %%Adapted from
 %%http://yetanotherbiochemblog.wordpress.com/2011/10/11/managing-conference-materials-in-latex-part-1-abstract-template/
-\\documentclass[14pt,a5paper,twoside]{book}
+\\documentclass[11pt,a5paper]{book}
+\\usepackage[a5paper]{geometry}
 \\usepackage[utf8x]{inputenc}
 \\usepackage[T1]{fontenc}
 \\usepackage[english]{babel}
