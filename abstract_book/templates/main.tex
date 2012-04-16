@@ -9,9 +9,9 @@
 \usepackage[T1]{fontenc}
 \usepackage[english]{babel}
 \usepackage{fixltx2e}
-
 \usepackage{hyphenat}
 \usepackage[usenames,dvipsnames]{color}
+\usepackage{multicols}
 
 %a5 paper= 	148mm x 210mm
 %a4 paper=	210mm x 297mm
@@ -31,11 +31,11 @@
 \renewcommand{\rmdefault}{ptm}
 
 \newcommand{\anumber}[1]{\leavevmode{\textbf{#1}}}
-\newcommand{\atitle}[1]{\leavevmode{\textbf{#1}}}
+\newcommand{\atitle}[1]{\leavevmode{\textbf{\large #1}}}
 \newcommand{\affiliation}[1]{\leavevmode{\textit{#1}}}
 \newcommand{\email}[1]{\leavevmode{\url{#1}}}
 \newcommand{\presenting}[1]{\leavevmode{\textbf{\underline{#1}}}}
-\newcommand{\authors}[1]{\textbf{#1}}
+\newcommand{\authors}[1]{\textbf{\small #1}}
 
 \usepackage{graphicx}
 \usepackage{wrapfig}
@@ -54,7 +54,7 @@
     \fancyhf{}
     \fancyhead[L]{}
     \fancyhead[CO,CE]{}
-    \fancyhead[R]{\small\textbf{#2}\\ \small\textit{#1}}
+    \fancyhead[R]{\small #2}
     \fancyfoot[RO,LE]{\thepage}
     \fancyfoot[CO,CE]{}
     \fancyfoot[L]{\textit{GRB 2012 - May 7-11, Munich, Germany}}
@@ -68,6 +68,10 @@
 \begin{document}
 \title{Abstracts}
 \maketitle
+
+\input{LOP}
+
+\newpage
 
 \redefineheaders{Monday, May 7}{Session I: Recent results from Swift and Fermi}
 $ABSTRACT_SESSION_I_1
@@ -133,6 +137,16 @@ $POSTERS_SESSION_PVI_p6
 $POSTERS_SESSION_PVII_p7
 \redefineheaders{}{P-VIII: Host Galaxies}
 $POSTERS_SESSION_PVIII_p8
+
+\newpage
+
+\redefineheaders{}{}
+
+\includegraphics[scale=0.5]{pg_0001.pdf}
+
+\includegraphics[scale=0.5]{pg_0002.pdf}
+
+\includegraphics[scale=0.5]{pg_0003.pdf}
 
 
 \end{document}
