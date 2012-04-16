@@ -13,7 +13,7 @@
 \usepackage[usenames,dvipsnames]{color}
 %\usepackage{multicols}
 \usepackage{longtable}
-
+%\usepackage{marvosym}
 
 
 
@@ -72,10 +72,6 @@
 \begin{document}
 \title{Abstracts}
 \maketitle
-
-\input{LOP}
-
-\newpage
 
 \redefineheaders{Monday, May 7}{Session I: Recent results from Swift and Fermi}
 $ABSTRACT_SESSION_I_1
@@ -144,13 +140,23 @@ $POSTERS_SESSION_PVIII_p8
 
 \newpage
 
-\redefineheaders{}{}
+\redefineheaders{}{List of Participants}
+\include{LOP}
 
-\includegraphics[scale=0.5]{pg_0001.pdf}
+\newpage
 
-\includegraphics[scale=0.5]{pg_0002.pdf}
+\redefineheaders{}{Poster Guide}
 
-\includegraphics[scale=0.5]{pg_0003.pdf}
+\includegraphics[scale=0.62,angle=90]{pg_0001.pdf}
 
+\includegraphics[scale=0.62,angle=90]{pg_0002.pdf}
+
+\includegraphics[scale=0.62,angle=90]{pg_0003.pdf}
+
+\newpage
+
+\redefineheaders{}{Index of Presenters}
+
+\include{IOP}
 
 \end{document}
