@@ -34,7 +34,7 @@ class users(object):
     tex = fp.read()
     fp.close()
     
-    _text = '\n'.join(['%s & %s & %s & %s\\\\ \\hline' % tuple([k[i] for i in _keys]) for k in self.users])
+    _text = '\n'.join(['\\tiny %s &\\tiny %s & \\tiny %s & \\tiny %s \\\\ \\hline' % tuple([k[i] for i in _keys]) for k in self.users])
     _text = _text.replace('@','\\@')
     tex = tex.replace('$LOP',_text)
     
