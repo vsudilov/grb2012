@@ -3,7 +3,7 @@
 %http://yetanotherbiochemblog.wordpress.com/2011/10/11/managing-conference-materials-in-latex-part-1-abstract-template/
 %Edited vss APRIL/2012
 
-\documentclass[11pt,a5paper,twoside]{book}
+\documentclass[11pt,a5paper,twoside]{mybook}
 \usepackage[a5paper]{geometry}
 \usepackage[utf8x]{inputenc}
 \usepackage[T1]{fontenc}
@@ -11,10 +11,7 @@
 \usepackage{fixltx2e}
 \usepackage{hyphenat}
 \usepackage[usenames,dvipsnames]{color}
-%\usepackage{multicols}
 \usepackage{longtable}
-%\usepackage{marvosym}
-
 
 
 %a5 paper= 	148mm x 210mm
@@ -67,6 +64,7 @@
 \usepackage{enumerate}
 
 \usepackage{makeidx}
+\renewcommand{\indexname}{Index of Presenters} %Doesn't work . Change \indexname in mybook.cls
 \makeindex
 
 \begin{document}
@@ -275,5 +273,12 @@
 
 \includegraphics[scale=0.62,angle=90]{pg_0003.pdf}
 
+\newpage
+
+\redefineheaders{}{Index of Presenters}
+
+\include{IOP}
+
+\printindex
 
 \end{document}

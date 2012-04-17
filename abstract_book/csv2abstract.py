@@ -85,12 +85,13 @@ class presentations(object):
       tex = tex.replace('$AFFILIATIONS',p['p.affiliations'])
       tex = tex.replace('$TEXT',p['p.abstract'])
       
-      presenter = '%s %s' % (p['u.firstname'].p['u.name'])
+      presenter = '%s, %s' % (p['u.name'],p['u.firstname'])
+      tex = tex.replace('$INDEX','\\tiny{%s: \\textit{%s}}' % (presenter,p['p.title']))
       
-      if presenter not in tex:
-        print "WARNING: Presenter [%s] not in author list [%s]" % (presenter,p['p.authors'])
+      #if presenter not in tex:
+      #  print "WARNING: Presenter [%s] not in author list [%s]" % (presenter,p['p.authors'])
         
-      tex = tex.replace(presenter,'\underline{%s}' % presenter)#Won't do anything if it isnt found
+      #tex = tex.replace(presenter,'\underline{%s}' % presenter)#Won't do anything if it isnt found
       
       
       fp = open('abstract%s.tex' % self.presentations.index(p),'w')
@@ -145,8 +146,8 @@ def main():
 
 
 if __name__ == "__main__":
-  print "WARNING: Are you sure you want to run this script? It will revert ALL abstracts back to their database state. This will DELETE ALL user edits to abstract*tex files! [yes/no]"
+  print "WARNING: Are you sure you want to run this script? It will revert ALL abstracts back to their database state.\nThis will DELETE ALL user edits to abstract*tex files! [yes/no]"
   confirm = raw_input('')
   if confirm != "yes":
-    sys.exit()
+    sys.exit('Exited.')
   main()

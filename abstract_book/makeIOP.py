@@ -4,14 +4,14 @@
 '''
 Parse the output from the sql query:
 
-SELECT sp.sessionid, sp.sequencenumber, p.type, p.title, p.authors, p.affiliations, p.abstract
+SELECT sp.sessionid, sp.sequencenumber, p.type, p.title, p.authors, p.affiliations, p.abstract, u.name, u.firstname
 FROM session_presentation sp, presentation p, user u
 WHERE p.id=sp.presentationid and u.invitationstatus='invited' and u.id=p.presenterid
 
-and input the data to make an abstract book.
+and input the data to make an index of presenters.
 '''
 
-_keys = ['sp.sessionid', 'sp.sequencenumber', 'p.type', 'p.title', 'p.authors', 'p.affiliations', 'p.abstract']
+_keys = ['sp.sessionid', 'sp.sequencenumber', 'p.type', 'p.title', 'p.authors', 'p.affiliations', 'p.abstract', 'u.name','u.firstname']
 
 import sys
 
@@ -45,23 +45,17 @@ class presentations(object):
     _sessions[40] = [23,"$POSTERS_SESSION_PVIII_p8","VIII"]
     self.sessions = _sessions
   
-  def appendPresentation(self,raw_presentation):
-    if not raw_presentation:
+  def appendUser(self,raw_user):
+    if not raw_user:
       return
-    if int(raw_presentation['sp.sessionid']) not in self.sessions:
-      print "UNDEFINED SESSION!"
-      print raw_presentation
-      print "PRESS ENTER TO SKIP"
-      raw_input()
-      return
-    self.presentations.append(raw_presentation)
+    self.users.append(raw_presentation)
   
   def _order(self):
     '''Order self.presentations based on session, sequence'''
     self.presentations = sorted(self.presentations, key=lambda k: (self.sessions[int(k['sp.sessionid'])][0],k['sp.sequencenumber']))
       
 
-  def makeMaintex(self,filename="main.tex",template_IOP='templates/IOP.tex',template_main='templates/main.tex'):
+  def makeMaintex(self,filename="main.tex",template_IOP='templates/IOP.tex'):
     self._order()
 
     self._order()
@@ -70,10 +64,9 @@ class presentations(object):
     fp.close()
     
     _text = '\n'.join(['\\tiny %s &\\tiny %s & \\tiny %s & \\tiny %s \\\\ \\hline' % tuple([k[i] for i in _keys]) for k in self.users])
-    #_text = _text.replace('@','\\MVAt')
     _text = _text.replace('_','\_')
     
-    tex = tex.replace('$LOP',_text)
+    tex = tex.replace('$IOP',_text)
     
     fp = open('IOP.tex','w')
     fp.write(tex)
