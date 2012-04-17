@@ -83,10 +83,15 @@ class presentations(object):
       tex = tex.replace('$TITLE',p['p.title'])
       tex = tex.replace('$AUTHORS',p['p.authors'])
       tex = tex.replace('$AFFILIATIONS',p['p.affiliations'])
-      tex = tex.replace('$TEXT',p['p.abstract'])
+      tex = tex.replace('$TEXT',p['p.abstract'].replace('%','\\%'))
       
       presenter = '%s, %s' % (p['u.name'],p['u.firstname'])
       tex = tex.replace('$INDEX','\\tiny{%s: \\textit{%s}}' % (presenter,p['p.title']))
+      
+      #Sanitize some errors
+      tex = tex.replace('~','$\\sim$')
+      tex = tex.replace('&','\\&')
+      
       
       #if presenter not in tex:
       #  print "WARNING: Presenter [%s] not in author list [%s]" % (presenter,p['p.authors'])
