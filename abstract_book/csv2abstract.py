@@ -4,14 +4,14 @@
 '''
 Parse the output from the sql query:
 
-SELECT sp.sessionid, sp.sequencenumber, p.type, p.title, p.authors, p.affiliations, p.abstract
+SELECT sp.sessionid, sp.sequencenumber, p.type, p.title, p.authors, p.affiliations, p.abstract, u.name, u.firstname
 FROM session_presentation sp, presentation p, user u
 WHERE p.id=sp.presentationid and u.invitationstatus='invited' and u.id=p.presenterid
 
 and input the data to make an abstract book.
 '''
 
-_keys = ['sp.sessionid', 'sp.sequencenumber', 'p.type', 'p.title', 'p.authors', 'p.affiliations', 'p.abstract']
+_keys = ['sp.sessionid', 'sp.sequencenumber', 'p.type', 'p.title', 'p.authors', 'p.affiliations', 'p.abstract', 'u.name','u.firstname']
 
 import sys
 
@@ -84,6 +84,14 @@ class presentations(object):
       tex = tex.replace('$AUTHORS',p['p.authors'])
       tex = tex.replace('$AFFILIATIONS',p['p.affiliations'])
       tex = tex.replace('$TEXT',p['p.abstract'])
+      
+      presenter = '%s %s' % (p['u.firstname'].p['u.name'])
+      
+      if presenter not in tex:
+        print "WARNING: Presenter [%s] not in author list [%s]" % (presenter,p['p.authors'])
+        
+      tex = tex.replace(presenter,'\underline{%s}' % presenter)#Won't do anything if it isnt found
+      
       
       fp = open('abstract%s.tex' % self.presentations.index(p),'w')
       _mapping[header].append('\include{abstract%s}' % self.presentations.index(p))
