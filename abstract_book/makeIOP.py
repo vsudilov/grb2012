@@ -1,4 +1,4 @@
-#csv2abstract.py
+#makeIOP.py
 #vss april/2012
 
 '''
@@ -61,48 +61,24 @@ class presentations(object):
     self.presentations = sorted(self.presentations, key=lambda k: (self.sessions[int(k['sp.sessionid'])][0],k['sp.sequencenumber']))
       
 
-  def makeMaintex(self,filename="main.tex",template_abs='templates/abstract.tex',template_main='templates/main.tex'):
+  def makeMaintex(self,filename="main.tex",template_IOP='templates/IOP.tex',template_main='templates/main.tex'):
     self._order()
 
-    #First: write abstracts###.tex
-    fp = open(template_abs,'r')
-    lines = fp.read()
+    self._order()
+    fp = open(template_IOP,'r')
+    tex = fp.read()
     fp.close()
     
-    _mapping = dict((i, []) for i in [self.sessions[k][1] for k in self.sessions])
+    _text = '\n'.join(['\\tiny %s &\\tiny %s & \\tiny %s & \\tiny %s \\\\ \\hline' % tuple([k[i] for i in _keys]) for k in self.users])
+    #_text = _text.replace('@','\\MVAt')
+    _text = _text.replace('_','\_')
     
-    for p in self.presentations:
-      header = self.sessions[int(p['sp.sessionid'])][1]
-      tex = '%% %s\n%s' % (header,lines)
-
-      if p['p.type'] == "poster":
-        tex = tex.replace('$NUMBER','P-%s-%s' % (self.sessions[int(p['sp.sessionid'])][2],p['sp.sequencenumber']))
-      else:
-        tex = tex.replace('$NUMBER','')
-      
-      tex = tex.replace('$TITLE',p['p.title'])
-      tex = tex.replace('$AUTHORS',p['p.authors'])
-      tex = tex.replace('$AFFILIATIONS',p['p.affiliations'])
-      tex = tex.replace('$TEXT',p['p.abstract'])
-      
-      fp = open('abstract%s.tex' % self.presentations.index(p),'w')
-      _mapping[header].append('\include{abstract%s}' % self.presentations.index(p))
-      fp.write(tex)
-      fp.close()
+    tex = tex.replace('$LOP',_text)
     
-    #Second: write main.tex
-    fp = open(template_main,'r')
-    lines = fp.read()
+    fp = open('IOP.tex','w')
+    fp.write(tex)
     fp.close()
     
-    for key in _mapping:
-      lines=lines.replace(key,'\n'.join(_mapping[key]))
-    
-    fp = open('main.tex','w')
-    fp.write(lines)
-    fp.close()
-    
-    print "[%s] written. Please run pdflatex on this file manually." % filename
 
 def parse(line):
   line = line.replace('~!\n','') #Remove newline delimiter
@@ -137,8 +113,4 @@ def main():
 
 
 if __name__ == "__main__":
-  print "WARNING: Are you sure you want to run this script? It will revert ALL abstracts back to their database state. This will DELETE ALL user edits to abstract*tex files! [yes/no]"
-  confirm = raw_input('')
-  if confirm != "yes":
-    sys.exit()
   main()
