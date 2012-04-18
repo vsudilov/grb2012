@@ -404,12 +404,12 @@
                    \@afterheading
                  \fi}
 \def\@makeschapterhead#1{%
-  \vspace*{50\p@}%
+  \vspace*{1\p@}%
   {\parindent \z@ \raggedright
     \normalfont
     \interlinepenalty\@M
-    \Huge \bfseries  #1\par\nobreak
-    \vskip 40\p@
+    \large \bfseries  #1\par\nobreak
+    \vskip 12\p@
   }}
 \newcommand\section{\@startsection {section}{1}{\z@}%
                                    {-3.5ex \@plus -1ex \@minus -.2ex}%
@@ -698,7 +698,7 @@
                 \else
                   \@restonecoltrue
                 \fi
-                \onecolumn\@makeschapterhead{Index of Presenters}%
+                \twocolumn\@makeschapterhead{Index of Presenters}%
                 \@mkboth{\MakeUppercase\indexname}%
                         {\MakeUppercase\indexname}%
                 \thispagestyle{plain}\parindent\z@

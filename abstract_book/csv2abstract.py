@@ -13,6 +13,26 @@ and input the data to make an abstract book.
 
 _keys = ['sp.sessionid', 'sp.sequencenumber', 'p.type', 'p.title', 'p.authors', 'p.affiliations', 'p.abstract', 'u.name','u.firstname']
 
+_invited_speakers = [
+'Racusin',
+'Piron',
+'McBreen',
+'Guiriec',
+'Lazzati',
+'MacFadyen',
+'Kruehler',
+'Schady',
+'Tanvir',
+'Bromm',
+'Bersier',
+'Rosswog',
+'Nakar',
+'Ahlers',
+'Corsi',
+'Hjorth',
+'Levesque'
+]
+
 import sys
 
 
@@ -85,8 +105,16 @@ class presentations(object):
       tex = tex.replace('$AFFILIATIONS',p['p.affiliations'])
       tex = tex.replace('$TEXT',p['p.abstract'].replace('%','\\%'))
       
+      if p['u.name'] in _invited_speakers:
+        tex = tex.replace(p['u.name'],'%s (invited)' % p['u.name'])
+      
       presenter = '%s, %s' % (p['u.name'],p['u.firstname'])
-      tex = tex.replace('$INDEX','\\tiny{%s: \\textit{%s}}' % (presenter,p['p.title']))
+      if presenter == "von Kienlin, Andreas": #Won't sort properly if v is lowercase
+        presenter = "Von Kienlin, Andreas"
+      
+      tex = tex.replace('$INDEX','\\tiny{%s}' % presenter)
+      
+      
       
       #Sanitize some errors
       tex = tex.replace('~','$\\sim$')
@@ -151,8 +179,8 @@ def main():
 
 
 if __name__ == "__main__":
-  print "WARNING: Are you sure you want to run this script? It will revert ALL abstracts back to their database state.\nThis will DELETE ALL user edits to abstract*tex files! [yes/no]"
-  confirm = raw_input('')
-  if confirm != "yes":
-    sys.exit('Exited.')
+  #print "WARNING: Are you sure you want to run this script? It will revert ALL abstracts back to their database state.\nThis will DELETE ALL user edits to abstract*tex files! [yes/no]"
+  #confirm = raw_input('')
+  #if confirm != "yes":
+  #  sys.exit('Exited.')
   main()

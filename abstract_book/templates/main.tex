@@ -12,7 +12,8 @@
 \usepackage{hyphenat}
 \usepackage[usenames,dvipsnames]{color}
 \usepackage{longtable}
-
+\usepackage{enumerate}
+\usepackage{makeidx}
 
 %a5 paper= 	148mm x 210mm
 %a4 paper=	210mm x 297mm
@@ -61,9 +62,6 @@
     \fancyfoot[L]{\textit{GRB 2012 - May 7-11, Munich, Germany}}
 }
 
-\usepackage{enumerate}
-
-\usepackage{makeidx}
 \renewcommand{\indexname}{Index of Presenters} %Doesn't work . Change \indexname in mybook.cls
 \makeindex
 
@@ -73,49 +71,34 @@
 
 \redefineheaders{Monday, May 7}{Session I: Recent results from Swift and Fermi}
 $ABSTRACT_SESSION_I_1
-
 \redefineheaders{Monday, May 7}{Session IIa: Prompt Emission Spectroscopy}
 $ABSTRACT_SESSION_IIa_2a
-
 \redefineheaders{Monday, May 7}{Session IIb: Prompt Emission Spectroscopy}
 $ABSTRACT_SESSION_IIb_2b
-
 \redefineheaders{Monday, May 7}{Session IIc: Prompt Emission Correlations and Temporal Properties}
 $ABSTRACT_SESSION_IIc_2c
-
 \redefineheaders{Tuesday, May 8}{Session IId: Very High-Energy Emission}
 $ABSTRACT_SESSION_IId_2d
-
 \redefineheaders{Tuesday, May 8}{Session IIIa: Afterglow Theory}
 $ABSTRACT_SESSION_IIIa_3a
-
 \redefineheaders{Tuesday, May 8}{Session IIIb: Afterglow Observatons}
 $ABSTRACT_SESSION_IIIb_3b
-
 \redefineheaders{Tuesday, May 8}{Session IIIc: Afterglow Observations}
 $ABSTRACT_SESSION_IIIc_3c
-
 \redefineheaders{Wednesday, May 9}{Session IVa: GRBs as Probes of the Early Universe}
 $ABSTRACT_SESSION_IVa_4a
-
 \redefineheaders{Wednesday, May 9}{Session IVb: GRBs as Probes of the Early Universe}
 $ABSTRACT_SESSION_IVb_4b
-
 \redefineheaders{Thursday, May 10}{Session Va: Progenitors of Long Duration Bursts}
 $ABSTRACT_SESSION_Va_5a
-
 \redefineheaders{Thursday, May 10}{Session Vb: Progenitors of Short Duration Bursts}
 $ABSTRACT_SESSION_Vb_5b
-
 \redefineheaders{Thursday, May 10}{Session Vc: Central Engine Physics}
 $ABSTRACT_SESSION_Vc_5c
-
 \redefineheaders{Thursday, May 10}{Session VI: History and Future Instrumentation}
 $ABSTRACT_SESSION_VI_6
-
 \redefineheaders{Friday, May 11}{Session VII: Grav. Waves, Neutrinos, Cosmic Rays and UHE Emission}
 $ABSTRACT_SESSION_VII_7
-
 \redefineheaders{Friday, May 11}{Session VIII: Host Galaxies}
 $ABSTRACT_SESSION_VIII_8
 
@@ -129,7 +112,12 @@ $ABSTRACT_SESSION_VIII_8
 \vspace*{\fill}
 \newpage
 
+\redefineheaders{}{Poster Guide}
+\includegraphics[scale=0.62,angle=90]{pg_0001.pdf}
+\includegraphics[scale=0.62,angle=90]{pg_0002.pdf}
+\includegraphics[scale=0.62,angle=90]{pg_0003.pdf}
 
+\newpage
 \redefineheaders{}{P-II: Prompt and High-Energy Emission}
 $POSTERS_SESSION_PII_p2
 \redefineheaders{}{P-III: Afterglow Emission}
@@ -145,27 +133,13 @@ $POSTERS_SESSION_PVII_p7
 \redefineheaders{}{P-VIII: Host Galaxies}
 $POSTERS_SESSION_PVIII_p8
 
-\newpage
 
+\newpage
+\redefineheaders{}{Index of Presenters}
+\printindex
+
+\newpage
 \redefineheaders{}{List of Participants}
 \include{LOP}
-
-\newpage
-
-\redefineheaders{}{Poster Guide}
-
-\includegraphics[scale=0.62,angle=90]{pg_0001.pdf}
-
-\includegraphics[scale=0.62,angle=90]{pg_0002.pdf}
-
-\includegraphics[scale=0.62,angle=90]{pg_0003.pdf}
-
-\newpage
-
-\redefineheaders{}{Index of Presenters}
-
-%\include{IOP} %%UNUSED -- \makeindex instead
-
-\printindex
 
 \end{document}
