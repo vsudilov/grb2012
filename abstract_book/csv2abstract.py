@@ -48,21 +48,21 @@ class presentations(object):
     _sessions[6] = [16,"$ABSTRACT_SESSION_VIII_8","Session VIII: Host Galaxies"]
     _sessions[7] = [9,"$ABSTRACT_SESSION_IVa_4a","Session IVa: GRBs as Probes of the Early Universe"]
     _sessions[8] = [14,"$ABSTRACT_SESSION_VI_6","Session VI: History and Future Instrumentation"]
-    _sessions[9] = [15,"$ABSTRACT_SESSION_VII_7","Session VII: Grav. Waves, Neutrinos, Cosmic Rays a..."]
+    _sessions[9] = [15,"$ABSTRACT_SESSION_VII_7","Session VII: Grav. Waves, Neutrinos, Cosmic Rays and UHE Emission"]
     _sessions[22] = [3,"$ABSTRACT_SESSION_IIb_2b","Session IIb: Prompt Emission Spectroscopy"]
-    _sessions[23] = [4,"$ABSTRACT_SESSION_IIc_2c","Session IIc: Prompt Emission Correlations and Temp..."]
+    _sessions[23] = [4,"$ABSTRACT_SESSION_IIc_2c","Session IIc: Prompt Emission Correlations and Temporal Properties"]
     _sessions[24] = [7,"$ABSTRACT_SESSION_IIIb_3b","Session IIIb: Afterglow Observations"]
     _sessions[25] = [13,"$ABSTRACT_SESSION_Vc_5c","Session Vc: Central Engine Physics"]
     _sessions[27] = [5,"$ABSTRACT_SESSION_IId_2d","Session IId: Very High-Energy Emission"]
     _sessions[31] = [8,"$ABSTRACT_SESSION_IIIc_3c","Session IIIc: Afterglow Observations"]
     _sessions[33] = [10,"$ABSTRACT_SESSION_IVb_4b","Session IVb: GRBs as Probes of the Early Universe"]
-    _sessions[34] = [17,"$POSTERS_SESSION_PII_p2","II"]
-    _sessions[35] = [18,"$POSTERS_SESSION_PIII_p3","III"]
-    _sessions[36] = [19,"$POSTERS_SESSION_PIV_p4","IV"]
-    _sessions[37] = [20,"$POSTERS_SESSION_PV_p5","V"]
-    _sessions[38] = [21,"$POSTERS_SESSION_PVI_p6","VI"]
-    _sessions[39] = [22,"$POSTERS_SESSION_PVII_p7","VII"]
-    _sessions[40] = [23,"$POSTERS_SESSION_PVIII_p8","VIII"]
+    _sessions[34] = [17,"$POSTERS_SESSION_PII_p2","P-II: Prompt and High-Energy Emission","II"]
+    _sessions[35] = [18,"$POSTERS_SESSION_PIII_p3","P-III: Afterglow Emission","III"]
+    _sessions[36] = [19,"$POSTERS_SESSION_PIV_p4","P-IV: Probes of the Early Universe","IV"]
+    _sessions[37] = [20,"$POSTERS_SESSION_PV_p5","P-V: Progenitors and Central Engine Physics","V"]
+    _sessions[38] = [21,"$POSTERS_SESSION_PVI_p6","P-VI: History and Future Instrumentation","VI"]
+    _sessions[39] = [22,"$POSTERS_SESSION_PVII_p7","P-VII: Grav. Waves, Neutrinos, Cosmic Rays and UHE Emission","VII"]
+    _sessions[40] = [23,"$POSTERS_SESSION_PVIII_p8","P-VIII: Host Galaxies","VIII"]
     self.sessions = _sessions
   
   def appendPresentation(self,raw_presentation):
@@ -78,7 +78,7 @@ class presentations(object):
   
   def _order(self):
     '''Order self.presentations based on session, sequence'''
-    self.presentations = sorted(self.presentations, key=lambda k: (self.sessions[int(k['sp.sessionid'])][0],k['sp.sequencenumber']))
+    self.presentations = sorted(self.presentations, key=lambda k: (self.sessions[int(k['sp.sessionid'])][0],int(k['sp.sequencenumber'])))
       
 
   def makeMaintex(self,filename="main.tex",template_abs='templates/abstract.tex',template_main='templates/main.tex'):
@@ -96,7 +96,7 @@ class presentations(object):
       tex = '%% %s\n%s' % (header,lines)
 
       if p['p.type'] == "poster":
-        tex = tex.replace('$NUMBER','P-%s-%s' % (self.sessions[int(p['sp.sessionid'])][2],p['sp.sequencenumber']))
+        tex = tex.replace('$NUMBER','P-%s-%s' % (self.sessions[int(p['sp.sessionid'])][3],p['sp.sequencenumber']))
       else:
         tex = tex.replace('$NUMBER','')
       
@@ -146,14 +146,41 @@ class presentations(object):
     
     print "[%s] written. Please run pdflatex on this file manually." % filename
 
-def parse(line):
-  line = line.replace('~!\n','') #Remove newline delimiter
+
+  def makePoS(self): #Requested a special format from that guys that will do the proceedings
+    
+    fp = open('LOP.csv') #First read in LOP, since we queried this table seperatly from presentations, and now it is too late to change due to manual edits of both CSV files.
+    lines = fp.readlines()
+    fp.close()
+    LOP = {}
+    for line in lines:
+      name,firstname,affiliation,email = line.split('|')
+      LOP[name] = [firstname,affiliation,email]
+
+
+    ascii = ''
+    previous_session = 0
+    for p in self.presentations:
+      sessionID = int(p['sp.sessionid'])
+      _cols = map(str.strip,[p['u.name'],p['u.firstname'],LOP[p['u.name']][1],LOP[p['u.name']][2],p['p.title']])
+      if self.sessions[sessionID][0] != previous_session:
+        previous_session = self.sessions[sessionID][0]
+        ascii += '%s\n' % self.sessions[sessionID][2]
+      ascii += '%s\n' % '|'.join(_cols)
+      
+    fp = open('SoP.txt','w')
+    fp.write(ascii)
+    fp.close()
+    
+
+def parse(line,newline='~!\n',field='|',keys=_keys):
+  line = line.replace(newline,'') #Remove newline delimiter
   line = line.strip()
   if not line:
     return None
-  line = line.split('|') #Field delimiter
+  line = line.split(field) #Field delimiter
   try:
-    _d = dict((k, line[i]) for (i, k) in enumerate(_keys))
+    _d = dict((k, line[i]) for (i, k) in enumerate(keys))
   except:
     print "WARNING: Failed parse. Here is the offending line:\n"
     print line
@@ -173,7 +200,7 @@ def main():
   for line in lines:
     myPresentations.appendPresentation(parse(line))
   myPresentations.makeMaintex()
-      
+  myPresentations.makePoS()
       
       
 
